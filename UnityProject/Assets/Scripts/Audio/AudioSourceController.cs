@@ -2,21 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AudioSourceController : MonoBehaviour {
-
+public class AudioSourceController : MonoBehaviour
+{
     private AudioSource _source;
-
-    public AudioClip Clip;
-    [Range(0,1)]
-    public float Volume = 1f;
-    [Range(.25f, 3)]
-    public float Pitch = 1f;
-    public bool Loop = false;
-    [Range(0f, 1f)]
-    public float SpacialBlend = 1f;
+    private Transform _transform;
+    private Transform _parentObject;
+    private bool _claimed;
 
     void Awake()
     {
+        _transform = this.transform;
         _source = GetComponent<AudioSource>();
         if(_source == null)
         {
@@ -24,9 +19,18 @@ public class AudioSourceController : MonoBehaviour {
         }
     }
     
-	void Start () {
-        Play();
-	}
+    void LateUpdate()
+    {
+        if (_claimed && _source.isPlaying == false)
+        {
+            Stop();
+            return;
+        }
+        if (_parentObject != null)
+        {
+            _transform.position = _parentObject.position;
+        }
+    }
 
     public void SetSourceProperties(AudioClip clip, float volume, float picth, bool loop, float spacialBlend)
     {
@@ -37,9 +41,30 @@ public class AudioSourceController : MonoBehaviour {
         _source.spatialBlend = spacialBlend;
     }
 
+    public void SetParent(Transform parent)
+    {
+        _parentObject = parent;
+    }
+    public void SetPosition(Vector3 position)
+    {
+        _transform.position = position;
+    }
+    
     public void Play()
     {
-        SetSourceProperties(Clip, Volume, Pitch, Loop, SpacialBlend);
+        _claimed = true;
         _source.Play();
+    }
+    public void Stop()
+    {
+        _source.Stop();
+        Reset();
+        AudioPoolManager.Instance.PutController(this);
+    }
+
+    private void Reset()
+    {
+        _parentObject = null;
+        _claimed = false;
     }
 }
