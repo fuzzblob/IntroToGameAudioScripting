@@ -4,4 +4,6 @@ This repository hosts the source code for my "Intro to game audio scripting" art
 
 Part one can be found here: https://www.asoundeffect.com/game-audio-scripting/
 
+Part two can be found here: https://www.asoundeffect.com/game-audio-scripting-part-2/
+
 Licensed under a modified MIT licence which allows for commercial and non-commercial use but prohibits use in military applications. Be nice.
